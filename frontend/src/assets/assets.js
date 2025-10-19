@@ -8,6 +8,7 @@ import pushup from "./pushup.svg";
 import squat from "./squats-2.svg";
 import planks from "./plankss.svg";
 import biceps from "./biceps.svg";
+import about from "./about.png";
 
 export const assets = {
   logo,
@@ -16,6 +17,7 @@ export const assets = {
   p2,
   p3,
   p4,
+  about,
 };
 export const workouts = [
   {
