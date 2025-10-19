@@ -5,7 +5,7 @@ import { FaCamera, FaHeartbeat, FaChartLine } from "react-icons/fa";
 const Features = () => {
   return (
     <section className="relative w-screen min-h-screen bg-slate-200 text-black flex flex-col items-center overflow-hidden px-6 md:px-16 py-24">
-      {/* Background */}
+    
       <img
         src={assets.p2}
         alt="Background pattern"
