@@ -23,7 +23,7 @@ const Header = () => {
             Start Your Journey
           </button>
           <button className="bg-white border border-green-700 text-green-800 px-6 py-3 rounded-lg font-semibold hover:bg-green-800 hover:text-white transition">
-            Watch Demo
+            Watch Tutorials
           </button>
         </div>
       </div>
