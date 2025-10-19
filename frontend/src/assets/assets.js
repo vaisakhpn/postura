@@ -4,6 +4,10 @@ import p3 from "./p3.png";
 import p1 from "./p1.png";
 import p2 from "./p2.png";
 import p4 from "./p4.png";
+import pushup from "./pushup.svg";
+import squat from "./squats-2.svg";
+import planks from "./plankss.svg";
+import biceps from "./biceps.svg";
 
 export const assets = {
   logo,
@@ -13,53 +17,31 @@ export const assets = {
   p3,
   p4,
 };
-export const gyms = [
+export const workouts = [
   {
-    _id: "gym1",
-    name: "Postura Fitness Center",
-    phone: 9876543210,
+    _id: "w1",
+    name: "Pushup",
+    icon: pushup,
     about:
-      "Experience next-generation workouts with AI-powered posture correction and personalized training plans. Our trainers and intelligent camera tracking ensure every rep is perfect, safe, and effective.",
-    fees: 500,
-    address: {
-      line1: "Main Road",
-      line2: "Kozhikode, Kerala",
-    },
+      "Builds chest, shoulders, arms, and core strength. Essential for upper body power and endurance",
   },
   {
-    _id: "gym2",
-    name: "Iron Forge Gym",
-    phone: 9847214589,
+    _id: "w2",
+    name: "Squat",
+    icon: squat,
     about:
-      "A premium strength and conditioning gym equipped with smart AI tracking systems, personalized workout analytics, and professional trainers to help you reach peak performance.",
-    fees: 450,
-    address: {
-      line1: "Downtown Street",
-      line2: "Kochi, Kerala",
-    },
+      "Targets legs and glutes. Builds lower body strength and improves mobility",
   },
   {
-    _id: "gym3",
-    name: "FitZone AI Studio",
-    phone: 9123456789,
-    about:
-      "An innovative fitness hub that integrates computer vision posture detection, adaptive training levels, and detailed performance tracking to enhance your fitness journey.",
-    fees: 480,
-    address: {
-      line1: "Cyber Park",
-      line2: "Bengaluru, Karnataka",
-    },
+    _id: "w3",
+    name: "Planks",
+    icon: planks,
+    about: "Strengthens core muscles. Improves posture and stability",
   },
   {
-    _id: "gym4",
-    name: "PowerPulse Training Hub",
-    phone: 9563124785,
-    about:
-      "Train smarter with Postura’s AI guidance and real-time feedback. Perfect your form, prevent injuries, and measure progress with precision camera analysis.",
-    fees: 520,
-    address: {
-      line1: "City Center Mall",
-      line2: "Thiruvananthapuram, Kerala",
-    },
+    _id: "w4",
+    name: "Bicep Curls",
+    icon: biceps,
+    about: "Isolates arm muscles. Builds bicep strength and definition",
   },
 ];
