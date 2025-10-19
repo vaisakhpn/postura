@@ -15,14 +15,14 @@ const Navbar = () => {
       }`}
     >
       <div className="flex items-center  justify-between px-8 py-0">
-        {/* Logo */}
-        <img
-          className="w-32 cursor-pointer"
-          src={assets.logo}
-          alt="Postura Logo"
-        />
+        <NavLink to="/">
+          <img
+            className="w-32 cursor-pointer"
+            src={assets.logo}
+            alt="Postura Logo"
+          />
+        </NavLink>
 
-        {/* Nav Links */}
         <ul className="hidden md:flex items-start gap-6 font-medium">
           <NavLink
             to="/"
@@ -50,7 +50,6 @@ const Navbar = () => {
           </NavLink>
         </ul>
 
-        {/* Button */}
         <button className="border border-green-800 px-4 py-2 rounded-md hover:bg-green-800 hover:text-white transition">
           Create Account
         </button>
