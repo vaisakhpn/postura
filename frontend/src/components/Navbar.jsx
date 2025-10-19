@@ -1,8 +1,9 @@
 import React from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets";
 
 const Navbar = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const isHome = location.pathname === "/";
 
@@ -50,7 +51,10 @@ const Navbar = () => {
           </NavLink>
         </ul>
 
-        <button className="border border-green-800 px-4 py-2 rounded-md hover:bg-green-800 hover:text-white transition">
+        <button
+          onClick={() => navigate("/login")}
+          className="border border-green-800 px-4 py-2 rounded-md hover:bg-green-800 hover:text-white transition"
+        >
           Create Account
         </button>
       </div>
