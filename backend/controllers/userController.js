@@ -5,15 +5,13 @@ import { v2 as cloudinary } from "cloudinary";
 import userModel from "../models/userModel.js";
 import gymOwnerModel from "../models/gymOwnerModel.js";
 
-// =========================
 // Register User
-// =========================
+
 const registerUser = async (req, res) => {
   try {
     const { name, email, password, selectedGym } = req.body;
     const imageFile = req.file;
 
-    // Validation
     if (!name || !email || !password || !selectedGym) {
       return res.json({ success: false, message: "Missing details" });
     }
@@ -29,23 +27,19 @@ const registerUser = async (req, res) => {
       });
     }
 
-    // Check if user already exists
     const existingUser = await userModel.findOne({ email });
     if (existingUser) {
       return res.json({ success: false, message: "Email already registered" });
     }
 
-    // Check if gym exists
     const gym = await gymOwnerModel.findById(selectedGym);
     if (!gym) {
       return res.json({ success: false, message: "Selected gym not found" });
     }
 
-    // Password hashing
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Upload image to cloudinary
     let image = "";
     if (imageFile) {
       const upload = await cloudinary.uploader.upload(imageFile.path, {
@@ -54,7 +48,6 @@ const registerUser = async (req, res) => {
       image = upload.secure_url;
     }
 
-    // Save new user
     const user = new userModel({
       name,
       email,
@@ -64,7 +57,6 @@ const registerUser = async (req, res) => {
     });
     const savedUser = await user.save();
 
-    // Generate JWT token
     const token = jwt.sign({ id: savedUser._id }, process.env.JWT_SECRET);
 
     res.json({
@@ -78,9 +70,8 @@ const registerUser = async (req, res) => {
   }
 };
 
-// =========================
 // Login User
-// =========================
+
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -103,9 +94,8 @@ const loginUser = async (req, res) => {
   }
 };
 
-// =========================
 // Get User Profile
-// =========================
+
 const getProfile = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -121,9 +111,8 @@ const getProfile = async (req, res) => {
   }
 };
 
-// =========================
 // Update Profile
-// =========================
+
 const updateProfile = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -134,10 +123,8 @@ const updateProfile = async (req, res) => {
       return res.json({ success: false, message: "Missing details" });
     }
 
-    // Update name
     await userModel.findByIdAndUpdate(userId, { name });
 
-    // Update image if provided
     if (imageFile) {
       const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
         resource_type: "image",
@@ -153,9 +140,7 @@ const updateProfile = async (req, res) => {
   }
 };
 
-// =========================
-// Get All Gyms (Dropdown)
-// =========================
+// Get All Gyms
 const getAllGyms = async (req, res) => {
   try {
     const gyms = await gymOwnerModel.find().select("_id gymName");
