@@ -5,7 +5,6 @@ import { v2 as cloudinary } from "cloudinary";
 import userModel from "../models/userModel.js";
 import gymOwnerModel from "../models/gymOwnerModel.js";
 
-
 // =========================
 // Register User
 // =========================
