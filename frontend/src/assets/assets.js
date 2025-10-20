@@ -1,5 +1,6 @@
 import logo from "./logooo.svg";
 import header_img from "./header_img.png";
+import dropdown from "./dropdown_icon.svg";
 import p3 from "./p3.png";
 import p1 from "./p1.png";
 import p2 from "./p2.png";
@@ -18,6 +19,7 @@ export const assets = {
   p3,
   p4,
   about,
+  dropdown,
 };
 export const workouts = [
   {
