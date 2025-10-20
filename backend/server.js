@@ -19,7 +19,7 @@ app.use(cors());
 
 // api endpoints
 app.use("/api/owner", gymOwnerRouter);
-app.use("/api/user", userRouter);
+app.use("/api/users", userRouter);
 
 app.get("/", (req, res) => {
   res.send("API WORKING");
