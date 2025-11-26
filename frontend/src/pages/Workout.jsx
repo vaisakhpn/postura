@@ -1,7 +1,12 @@
 import React from "react";
 import { workouts } from "../assets/assets";
+import { useNavigate } from "react-router-dom";
 
 const Workout = () => {
+  const navigate = useNavigate();
+  const handleCheckPosture = (exerciseName) => {
+    navigate(`/posture/${exerciseName.toLowerCase()}`);
+  };
   return (
     <div className="pt-44 px-8 text-black min-h-screen">
       <div className="flex flex-col justify-center items-center">
@@ -27,7 +32,10 @@ const Workout = () => {
             </div>
 
             <div className="flex justify-center gap-4">
-              <button className="bg-white text-sm border text-green-800 p-2 rounded-xl font-semibold hover:bg-green-800 hover:text-white transition transition">
+              <button
+                onClick={() => handleCheckPosture(workout.name)}
+                className="bg-white text-sm border text-green-800 p-2 rounded-xl font-semibold hover:bg-green-800 hover:text-white transition transition"
+              >
                 Check Posture
               </button>
               <button className="bg-white text-sm border p-2  text-green-800 rounded-xl font-semibold hover:bg-green-800 hover:text-white transition">

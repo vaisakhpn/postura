@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Navbar from "./components/Navbar";
 import Workout from "./pages/workout";
 import About from "./pages/About";
+import PosturePage from "./pages/PosturePage";
 
 const App = () => {
   return (
@@ -12,9 +13,11 @@ const App = () => {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
+
         <Route path="/workout" element={<Workout />} />
         <Route path="/about" element={<About />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/posture/:exerciseName" element={<PosturePage />} />
       </Routes>
     </div>
   );
