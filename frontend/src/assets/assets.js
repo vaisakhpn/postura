@@ -44,7 +44,7 @@ export const workouts = [
   },
   {
     _id: "w4",
-    name: "Bicep Curls",
+    name: "Biceps",
     icon: biceps,
     about: "Isolates arm muscles. Builds bicep strength and definition",
   },
