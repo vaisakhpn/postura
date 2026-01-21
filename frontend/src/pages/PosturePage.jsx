@@ -2,6 +2,8 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import SquatDetector from "../components/SquatDetector";
 import PushUpDetector from "../components/PushUpDetector";
+import PlankDetector from "../components/PlankDetector";
+import BicepsDetector from "../components/BicepsDetector";
 
 const PosturePage = () => {
   const { exerciseName } = useParams();
@@ -12,6 +14,10 @@ const PosturePage = () => {
         return <SquatDetector />;
       case "pushup":
         return <PushUpDetector />;
+      case "planks":
+        return <PlankDetector />;
+      case "biceps":
+        return <BicepsDetector />;
       default:
         return (
           <p className="text-center mt-10 text-red-600">

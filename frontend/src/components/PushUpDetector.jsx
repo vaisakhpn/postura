@@ -20,7 +20,6 @@ const PushUpDetector = () => {
       setFeedback(msg);
     };
 
-    // 🎥 Setup Camera
     const setupVideo = async () => {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { width: 640, height: 480, facingMode: "user" },
@@ -33,7 +32,6 @@ const PushUpDetector = () => {
       canvasRef.current.height = videoRef.current.videoHeight || 480;
     };
 
-    // ⚙️ Initialize Backend + Model
     const initModel = async () => {
       await tf.setBackend("webgl");
       await tf.ready();
@@ -43,12 +41,11 @@ const PushUpDetector = () => {
           runtime: "mediapipe",
           solutionPath: "https://cdn.jsdelivr.net/npm/@mediapipe/pose",
           modelType: "lite",
-        }
+        },
       );
       setMsg("Model loaded!");
     };
 
-    // 📏 Helper Functions
     const kpToPixel = (kp, w, h) =>
       kp && kp.x <= 1 && kp.y <= 1
         ? { x: kp.x * w, y: kp.y * h, score: kp.score ?? 0 }
@@ -72,7 +69,6 @@ const PushUpDetector = () => {
       const h = canvasRef.current.height;
       ctx.clearRect(0, 0, w, h);
 
-      // mirror camera view
       ctx.save();
       ctx.scale(-1, 1);
       ctx.translate(-w, 0);
@@ -99,7 +95,6 @@ const PushUpDetector = () => {
         ctx.stroke();
       };
 
-      // draw all keypoints
       ctx.fillStyle = "lime";
       Object.values(points).forEach((p) => {
         ctx.beginPath();
@@ -107,26 +102,23 @@ const PushUpDetector = () => {
         ctx.fill();
       });
 
-      // === ELBOW ANGLE DETECTION ===
       const useArm =
         points["left_shoulder"] && points["left_elbow"] && points["left_wrist"]
           ? ["left_shoulder", "left_elbow", "left_wrist"]
           : points["right_shoulder"] &&
-            points["right_elbow"] &&
-            points["right_wrist"]
-          ? ["right_shoulder", "right_elbow", "right_wrist"]
-          : null;
+              points["right_elbow"] &&
+              points["right_wrist"]
+            ? ["right_shoulder", "right_elbow", "right_wrist"]
+            : null;
       if (!useArm) return;
       const [A, B, C] = useArm.map((k) => points[k]);
       const elbowAngle = calcAngle(A, B, C);
 
-      // === SPINE ALIGNMENT ===
       const shoulder = points["left_shoulder"] || points["right_shoulder"];
       const hip = points["left_hip"] || points["right_hip"];
       const knee = points["left_knee"] || points["right_knee"];
       const spineAngle = calcAngle(shoulder, hip, knee);
 
-      // === HIP SAGGING / HIGH CHECK ===
       let hipFeedback = "";
       if (shoulder && hip) {
         const diffY = hip.y - shoulder.y;
@@ -134,7 +126,6 @@ const PushUpDetector = () => {
         else if (diffY > 120) hipFeedback = "⚠️ Hips sagging!";
       }
 
-      // === COLOR SELECTION LOGIC ===
       let armColor = "yellow";
       let spineColor = "cyan";
 
@@ -156,13 +147,11 @@ const PushUpDetector = () => {
         setMsg("⏸ Mid-range – keep spine neutral!");
       }
 
-      // === DRAW LINES WITH COLOR FEEDBACK ===
       line(A, B, armColor);
       line(B, C, armColor);
       line(shoulder, hip, spineColor);
       line(hip, knee, spineColor);
 
-      // === DISPLAY ANGLES ===
       ctx.fillStyle = "white";
       ctx.font = "18px Arial";
       ctx.fillText(`Elbow: ${Math.round(elbowAngle)}°`, 10, 24);
@@ -203,13 +192,83 @@ const PushUpDetector = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center mt-8">
-      <h2 className="text-2xl font-semibold mb-2">🤸 AI Push-Up Detector</h2>
-      <p className="text-lg mb-3 text-center">{feedback}</p>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 w-full flex flex-col items-center">
+      <h2 className="text-3xl font-bold mb-6 text-gray-800 dark:text-white">
+        🤸 AI Push-Up Detector
+      </h2>
 
-      <div className="relative" style={{ width: 640 }}>
-        <video ref={videoRef} style={{ display: "none" }} />
-        <canvas ref={canvasRef} style={{ borderRadius: 12 }} />
+      <div className="flex flex-col xl:flex-row gap-8 w-full max-w-7xl justify-center items-start">
+        <div className="w-full xl:w-1/2 flex flex-col items-center">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl w-full border border-gray-100 dark:border-gray-700">
+            <h3 className="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-200 flex items-center gap-2">
+              <span>🎥</span> Reference Form
+            </h3>
+            <div className="relative w-full rounded-xl overflow-hidden shadow-lg bg-black aspect-video">
+              <video
+                src="/pushup_side.mp4"
+                className="w-full h-full object-fit"
+                autoPlay
+                loop
+                muted
+                playsInline
+                controls
+              />
+            </div>
+            <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <h4 className="font-medium text-blue-800 dark:text-blue-300 mb-1">
+                Pro Tips:
+              </h4>
+              <ul className="list-disc list-inside text-sm text-blue-700 dark:text-blue-400 space-y-1">
+                <li>Keep your body in a straight line (head to heels).</li>
+                <li>Lower chest until elbows are at 90 degrees.</li>
+                <li>Don't let hips sag or peak too high.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div className="w-full xl:w-1/2 flex flex-col items-center">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl w-full border border-gray-100 dark:border-gray-700">
+            <h3 className="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-200 flex items-center justify-between">
+              <span className="flex items-center gap-2">
+                <span>👁️</span> AI Analysis
+              </span>
+              <span
+                className={`text-sm px-3 py-1 rounded-full font-medium ${
+                  feedback.includes("✅")
+                    ? "bg-green-100 text-green-700"
+                    : feedback.includes("⚠️")
+                      ? "bg-red-100 text-red-700"
+                      : "bg-yellow-100 text-yellow-700"
+                }`}
+              >
+                {feedback.includes("✅")
+                  ? "Good Form"
+                  : feedback.includes("⚠️")
+                    ? "Correction Needed"
+                    : "Active"}
+              </span>
+            </h3>
+
+            <div className="relative w-full bg-black rounded-xl overflow-hidden shadow-lg aspect-[4/3] flex items-center justify-center">
+              <video
+                ref={videoRef}
+                className="hidden"
+                playsInline
+                muted
+                autoPlay
+              />
+              <canvas
+                ref={canvasRef}
+                className="w-full h-full object-contain"
+              />
+              <div className="absolute bottom-4 left-0 right-0 flex justify-center pointer-events-none">
+                <div className="bg-black/70 backdrop-blur-md text-white px-6 py-2 rounded-full font-medium text-lg shadow-lg border border-white/10 transition-all duration-300">
+                  {feedback}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

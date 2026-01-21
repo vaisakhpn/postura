@@ -1,51 +1,40 @@
-// src/components/SquatDetector.jsx
 import React, { useRef, useEffect, useState } from "react";
 import * as tf from "@tensorflow/tfjs";
 import * as posedetection from "@tensorflow-models/pose-detection";
 import "@tensorflow/tfjs-backend-webgl";
 import "@mediapipe/pose";
 
-const SquatDetector = () => {
+const PlankDetector = () => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
-  const [feedback, setFeedback] = useState("Initializing camera & model...");
-  const debug = true;
+  const [feedback, setFeedback] = useState("Initializing camera...");
+  const debug = false;
 
   useEffect(() => {
     let detector = null;
     let rafId = null;
     let running = true;
 
-    const setMsg = (m) => {
-      if (debug) console.log("[SquatDetector]", m);
-      setFeedback(m);
+    const setMsg = (msg) => {
+      if (debug) console.log("[PlankDetector]", msg);
+      setFeedback(msg);
     };
 
     const setupVideo = async () => {
-      setMsg("Requesting camera permission...");
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { width: 640, height: 480, facingMode: "user" },
         audio: false,
       });
       videoRef.current.srcObject = stream;
-
-      await new Promise((resolve) => {
-        videoRef.current.onloadedmetadata = () => {
-          videoRef.current.play().then(resolve).catch(resolve);
-        };
-      });
+      await videoRef.current.play();
 
       canvasRef.current.width = videoRef.current.videoWidth || 640;
       canvasRef.current.height = videoRef.current.videoHeight || 480;
-      setMsg(
-        `Camera ready: ${canvasRef.current.width}x${canvasRef.current.height}`,
-      );
     };
 
-    const initBackendAndModel = async () => {
+    const initModel = async () => {
       await tf.setBackend("webgl");
       await tf.ready();
-      setMsg("Loading BlazePose model...");
       detector = await posedetection.createDetector(
         posedetection.SupportedModels.BlazePose,
         {
@@ -54,18 +43,16 @@ const SquatDetector = () => {
           modelType: "lite",
         },
       );
-      setMsg("Model loaded");
+      setMsg("Model loaded!");
     };
 
-    const kpToPixel = (kp, width, height) => {
-      if (!kp) return null;
-      if (kp.x <= 1 && kp.y <= 1) {
-        return { x: kp.x * width, y: kp.y * height, score: kp.score ?? 0 };
-      }
-      return kp;
-    };
+    const kpToPixel = (kp, w, h) =>
+      kp && kp.x <= 1 && kp.y <= 1
+        ? { x: kp.x * w, y: kp.y * h, score: kp.score ?? 0 }
+        : kp;
 
     const calcAngle = (A, B, C) => {
+      if (!A || !B || !C) return null;
       const AB = { x: A.x - B.x, y: A.y - B.y };
       const CB = { x: C.x - B.x, y: C.y - B.y };
       const dot = AB.x * CB.x + AB.y * CB.y;
@@ -74,13 +61,6 @@ const SquatDetector = () => {
       if (magAB === 0 || magCB === 0) return null;
       const cosTheta = Math.min(1, Math.max(-1, dot / (magAB * magCB)));
       return (Math.acos(cosTheta) * 180) / Math.PI;
-    };
-
-    const calcTorsoLean = (shoulder, hip) => {
-      const dx = shoulder.x - hip.x;
-      const dy = hip.y - shoulder.y;
-      const angle = Math.atan2(Math.abs(dx), Math.abs(dy)) * (180 / Math.PI);
-      return angle;
     };
 
     const draw = (poses) => {
@@ -95,7 +75,7 @@ const SquatDetector = () => {
       ctx.drawImage(videoRef.current, 0, 0, w, h);
       ctx.restore();
 
-      if (!poses || !poses.length) return;
+      if (!poses?.length) return;
       const kps = poses[0].keypoints;
       if (!kps) return;
 
@@ -122,58 +102,62 @@ const SquatDetector = () => {
         ctx.fill();
       });
 
-      const shoulder = points["left_shoulder"] || points["right_shoulder"];
-      const hip = points["left_hip"] || points["right_hip"];
-      if (shoulder && hip) {
-        const torsoAngle = calcTorsoLean(shoulder, hip);
-        let torsoFeedback = "";
+      const leftSide = ["left_shoulder", "left_hip", "left_ankle"];
+      const rightSide = ["right_shoulder", "right_hip", "right_ankle"];
 
-        if (torsoAngle > 35) {
-          torsoFeedback = `⚠️ Leaning too far (${Math.round(torsoAngle)}°)`;
-          line(shoulder, hip, "red");
-        } else if (torsoAngle > 20) {
-          torsoFeedback = `⚠️ Slight lean (${Math.round(torsoAngle)}°)`;
-          line(shoulder, hip, "orange");
+      let useSide = null;
+      if (
+        points["left_shoulder"] &&
+        points["left_hip"] &&
+        points["left_ankle"]
+      ) {
+        useSide = leftSide;
+      } else if (
+        points["right_shoulder"] &&
+        points["right_hip"] &&
+        points["right_ankle"]
+      ) {
+        useSide = rightSide;
+      }
+
+      if (!useSide) {
+        setMsg("⚠️ Full body not visible");
+        return;
+      }
+
+      const [shoulder, hip, ankle] = useSide.map((k) => points[k]);
+
+      const hipAngle = calcAngle(shoulder, hip, ankle);
+
+      let spineColor = "yellow";
+      let statusMsg = "";
+
+      if (hipAngle > 165) {
+        spineColor = "green";
+        statusMsg = "✅ Perfect Plank!";
+      } else if (hipAngle < 140) {
+        if (hip.y < shoulder.y && hip.y < ankle.y) {
+          spineColor = "red";
+          statusMsg = "⚠️ Hips too high!";
         } else {
-          torsoFeedback = `✅ Good posture (${Math.round(torsoAngle)}°)`;
-          line(shoulder, hip, "blue");
+          spineColor = "orange";
+          statusMsg = "⚠️ Hips sagging / straighten up!";
         }
-
-        ctx.fillStyle = "white";
-        ctx.font = "18px Arial";
-        ctx.fillText(torsoFeedback, 10, 48);
-      }
-
-      const leftOK =
-        points["left_hip"] && points["left_knee"] && points["left_ankle"];
-      const rightOK =
-        points["right_hip"] && points["right_knee"] && points["right_ankle"];
-      const use = leftOK
-        ? ["left_hip", "left_knee", "left_ankle"]
-        : rightOK
-          ? ["right_hip", "right_knee", "right_ankle"]
-          : null;
-      if (!use) return;
-
-      const A = points[use[0]],
-        B = points[use[1]],
-        C = points[use[2]];
-      const angle = calcAngle(A, B, C);
-      if (!angle) return;
-
-      ctx.fillStyle = "white";
-      ctx.fillText(`Knee angle: ${Math.round(angle)}°`, 10, 24);
-
-      if (angle < 65) {
-        setMsg("⚠️ Too deep — raise a bit!");
-        line(A, C, "red");
-      } else if (angle >= 65 && angle <= 100) {
-        setMsg("✅ Good squat posture!");
-        line(A, C, "green");
       } else {
-        setMsg("⬇️ Go lower for better squat!");
-        line(A, C, "orange");
+        spineColor = "yellow";
+        statusMsg = "⏸ Align your body straight";
       }
+
+      setMsg(statusMsg);
+
+      // Draw lines
+      line(shoulder, hip, spineColor);
+      line(hip, ankle, spineColor);
+
+      // Display Angle
+      ctx.fillStyle = "white";
+      ctx.font = "18px Arial";
+      ctx.fillText(`Hip Angle: ${Math.round(hipAngle)}°`, 10, 24);
     };
 
     const frameLoop = async () => {
@@ -182,7 +166,7 @@ const SquatDetector = () => {
         const poses = await detector.estimatePoses(videoRef.current);
         draw(poses);
       } catch (err) {
-        console.error("estimatePoses error:", err);
+        console.error("Pose detection error:", err);
         setMsg("Error: " + err.message);
       }
       rafId = requestAnimationFrame(frameLoop);
@@ -191,11 +175,10 @@ const SquatDetector = () => {
     const start = async () => {
       try {
         await setupVideo();
-        await initBackendAndModel();
+        await initModel();
         frameLoop();
       } catch (err) {
-        console.error("Init error:", err);
-        setMsg("Startup error: " + err.message);
+        setMsg("Initialization error: " + err.message);
       }
     };
 
@@ -212,20 +195,24 @@ const SquatDetector = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 w-full flex flex-col items-center">
       <h2 className="text-3xl font-bold mb-6 text-gray-800 dark:text-white">
-        🏋️ AI Posture Correction - Squat
+        🧘 AI Plank Detector
       </h2>
 
       <div className="flex flex-col xl:flex-row gap-8 w-full max-w-7xl justify-center items-start">
         <div className="w-full xl:w-1/2 flex flex-col items-center">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl w-full border border-gray-100 dark:border-gray-700">
             <h3 className="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-200 flex items-center gap-2">
-              <span>📸</span> Reference Form
+              <span>🎥</span> Reference Form
             </h3>
-            <div className="relative w-full rounded-xl overflow-hidden shadow-lg bg-gray-100 dark:bg-black aspect-[3/4]">
-              <img
-                src="/squat_front.jpeg"
-                className="w-full h-full object-contain"
-                alt="Squat Reference"
+            <div className="relative w-full rounded-xl overflow-hidden shadow-lg bg-black aspect-video">
+              <video
+                src="/plank_side.mp4"
+                className="w-full h-full object-fit"
+                autoPlay
+                loop
+                muted
+                playsInline
+                controls
               />
             </div>
             <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
@@ -233,9 +220,11 @@ const SquatDetector = () => {
                 Pro Tips:
               </h4>
               <ul className="list-disc list-inside text-sm text-blue-700 dark:text-blue-400 space-y-1">
-                <li>Keep your back straight and chest up.</li>
-                <li>Lower hips until thighs are parallel to the floor.</li>
-                <li>Ensure knees don't cave inward.</li>
+                <li>Keep body in a straight line from head to heels.</li>
+                <li>Engage your core and glutes.</li>
+                <li>
+                  Keep elbows directly under shoulders (if forearm plank).
+                </li>
               </ul>
             </div>
           </div>
@@ -251,20 +240,20 @@ const SquatDetector = () => {
                 className={`text-sm px-3 py-1 rounded-full font-medium ${
                   feedback.includes("✅")
                     ? "bg-green-100 text-green-700"
-                    : feedback.includes("⚠️") || feedback.includes("⬇️")
+                    : feedback.includes("⚠️")
                       ? "bg-red-100 text-red-700"
                       : "bg-yellow-100 text-yellow-700"
                 }`}
               >
                 {feedback.includes("✅")
                   ? "Good Form"
-                  : feedback.includes("⚠️") || feedback.includes("⬇️")
+                  : feedback.includes("⚠️")
                     ? "Correction Needed"
                     : "Active"}
               </span>
             </h3>
 
-            <div className="relative w-full bg-black rounded-xl overflow-hidden shadow-lg aspect-[3/4] flex items-center justify-center">
+            <div className="relative w-full bg-black rounded-xl overflow-hidden shadow-lg aspect-[4/3] flex items-center justify-center">
               <video
                 ref={videoRef}
                 className="hidden"
@@ -277,6 +266,7 @@ const SquatDetector = () => {
                 className="w-full h-full object-contain"
               />
 
+              {/* Overlay Feedback Toast */}
               <div className="absolute bottom-4 left-0 right-0 flex justify-center pointer-events-none">
                 <div className="bg-black/70 backdrop-blur-md text-white px-6 py-2 rounded-full font-medium text-lg shadow-lg border border-white/10 transition-all duration-300">
                   {feedback}
@@ -290,4 +280,4 @@ const SquatDetector = () => {
   );
 };
 
-export default SquatDetector;
+export default PlankDetector;
