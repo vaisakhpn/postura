@@ -10,6 +10,8 @@ const PushUpDetector = () => {
   const [feedback, setFeedback] = useState("Initializing camera...");
   const debug = false;
 
+  const lastSpokenTime = useRef(0);
+
   useEffect(() => {
     let detector = null;
     let rafId = null;
@@ -18,6 +20,16 @@ const PushUpDetector = () => {
     const setMsg = (msg) => {
       if (debug) console.log("[PushUpDetector]", msg);
       setFeedback(msg);
+    };
+
+    const speak = (text) => {
+      const now = Date.now();
+      if (now - lastSpokenTime.current > 3000) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        window.speechSynthesis.speak(utterance);
+        lastSpokenTime.current = now;
+      }
     };
 
     const setupVideo = async () => {
@@ -95,68 +107,80 @@ const PushUpDetector = () => {
         ctx.stroke();
       };
 
+      const relevantKeypoints = [
+        "left_shoulder",
+        "right_shoulder",
+        "left_elbow",
+        "right_elbow",
+        "left_wrist",
+        "right_wrist",
+        "left_hip",
+        "right_hip",
+        "left_knee",
+        "right_knee",
+        "left_ankle",
+        "right_ankle",
+      ];
+
       ctx.fillStyle = "lime";
-      Object.values(points).forEach((p) => {
-        ctx.beginPath();
-        ctx.arc(w - p.x, p.y, 4, 0, Math.PI * 2);
-        ctx.fill();
+      Object.entries(points).forEach(([name, p]) => {
+        if (relevantKeypoints.includes(name)) {
+          ctx.beginPath();
+          ctx.arc(w - p.x, p.y, 4, 0, Math.PI * 2);
+          ctx.fill();
+        }
       });
 
-      const useArm =
-        points["left_shoulder"] && points["left_elbow"] && points["left_wrist"]
-          ? ["left_shoulder", "left_elbow", "left_wrist"]
-          : points["right_shoulder"] &&
-              points["right_elbow"] &&
-              points["right_wrist"]
-            ? ["right_shoulder", "right_elbow", "right_wrist"]
-            : null;
-      if (!useArm) return;
-      const [A, B, C] = useArm.map((k) => points[k]);
-      const elbowAngle = calcAngle(A, B, C);
-
       const shoulder = points["left_shoulder"] || points["right_shoulder"];
+      const elbow = points["left_elbow"] || points["right_elbow"];
+      const wrist = points["left_wrist"] || points["right_wrist"];
       const hip = points["left_hip"] || points["right_hip"];
       const knee = points["left_knee"] || points["right_knee"];
-      const spineAngle = calcAngle(shoulder, hip, knee);
+      const ankle = points["left_ankle"] || points["right_ankle"];
+
+      const bodyAngle = calcAngle(shoulder, hip, ankle);
 
       let hipFeedback = "";
-      if (shoulder && hip) {
-        const diffY = hip.y - shoulder.y;
-        if (diffY < -20) hipFeedback = "⚠️ Hips too high!";
-        else if (diffY > 120) hipFeedback = "⚠️ Hips sagging!";
+      if (shoulder && hip && ankle) {
+        if (bodyAngle < 140) {
+          if (hip.y < shoulder.y && hip.y < ankle.y) {
+            hipFeedback = "⚠️ Hips too high!";
+            speak("Hips too high");
+          } else {
+            hipFeedback = "⚠️ Hips sagging!";
+            speak("Hips sagging");
+          }
+        }
       }
 
-      let armColor = "yellow";
+      let statusMsg = "Active";
       let spineColor = "cyan";
 
-      if (elbowAngle > 160 && spineAngle > 150 && !hipFeedback) {
-        armColor = "green";
-        spineColor = "green";
-        setMsg("✅ Top position – straight body, full extension!");
-      } else if (elbowAngle < 90) {
-        armColor = "red";
-        spineColor = "orange";
-        setMsg("⬇️ Lower down – chest closer to floor!");
-      } else if (hipFeedback) {
-        armColor = "orange";
+      if (hipFeedback) {
         spineColor = "red";
-        setMsg(hipFeedback);
+        statusMsg = hipFeedback;
+      } else if (bodyAngle > 165) {
+        spineColor = "green";
+        statusMsg = "✅ Good Form";
       } else {
-        armColor = "orange";
         spineColor = "yellow";
-        setMsg("⏸ Mid-range – keep spine neutral!");
+        statusMsg = "Active";
       }
 
-      line(A, B, armColor);
-      line(B, C, armColor);
-      line(shoulder, hip, spineColor);
-      line(hip, knee, spineColor);
+      setMsg(statusMsg);
+
+      // Draw skeleton lines if points exist
+      if (shoulder && elbow) line(shoulder, elbow, "white");
+      if (elbow && wrist) line(elbow, wrist, "white");
+      if (shoulder && hip) line(shoulder, hip, spineColor);
+      if (hip && knee) line(hip, knee, spineColor);
+      if (knee && ankle) line(knee, ankle, spineColor);
 
       ctx.fillStyle = "white";
       ctx.font = "18px Arial";
-      ctx.fillText(`Elbow: ${Math.round(elbowAngle)}°`, 10, 24);
-      if (spineAngle) ctx.fillText(`Spine: ${Math.round(spineAngle)}°`, 10, 48);
-      if (hipFeedback) ctx.fillText(hipFeedback, 10, 72);
+      if (bodyAngle)
+        ctx.fillText(`Body Angle: ${Math.round(bodyAngle)}°`, 10, 24);
+      if (hipFeedback) ctx.fillText(hipFeedback, 10, 48);
     };
 
     const frameLoop = async () => {
@@ -188,6 +212,7 @@ const PushUpDetector = () => {
       cancelAnimationFrame(rafId);
       if (videoRef.current?.srcObject)
         videoRef.current.srcObject.getTracks().forEach((t) => t.stop());
+      window.speechSynthesis.cancel();
     };
   }, []);
 

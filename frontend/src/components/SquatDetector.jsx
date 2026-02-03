@@ -11,6 +11,8 @@ const SquatDetector = () => {
   const [feedback, setFeedback] = useState("Initializing camera & model...");
   const debug = true;
 
+  const lastSpokenTime = useRef(0); // For voice throttling
+
   useEffect(() => {
     let detector = null;
     let rafId = null;
@@ -19,6 +21,17 @@ const SquatDetector = () => {
     const setMsg = (m) => {
       if (debug) console.log("[SquatDetector]", m);
       setFeedback(m);
+    };
+
+    // 🗣️ Voice Feedback Helper
+    const speak = (text) => {
+      const now = Date.now();
+      if (now - lastSpokenTime.current > 3000) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        window.speechSynthesis.speak(utterance);
+        lastSpokenTime.current = now;
+      }
     };
 
     const setupVideo = async () => {
@@ -115,11 +128,24 @@ const SquatDetector = () => {
         ctx.stroke();
       };
 
+      const relevantKeypoints = [
+        "left_shoulder",
+        "right_shoulder",
+        "left_hip",
+        "right_hip",
+        "left_knee",
+        "right_knee",
+        "left_ankle",
+        "right_ankle",
+      ];
+
       ctx.fillStyle = "lime";
-      Object.values(points).forEach((p) => {
-        ctx.beginPath();
-        ctx.arc(w - p.x, p.y, 4, 0, Math.PI * 2);
-        ctx.fill();
+      Object.entries(points).forEach(([name, p]) => {
+        if (relevantKeypoints.includes(name)) {
+          ctx.beginPath();
+          ctx.arc(w - p.x, p.y, 4, 0, Math.PI * 2);
+          ctx.fill();
+        }
       });
 
       const shoulder = points["left_shoulder"] || points["right_shoulder"];
@@ -131,6 +157,7 @@ const SquatDetector = () => {
         if (torsoAngle > 35) {
           torsoFeedback = `⚠️ Leaning too far (${Math.round(torsoAngle)}°)`;
           line(shoulder, hip, "red");
+          speak("Lift your chest");
         } else if (torsoAngle > 20) {
           torsoFeedback = `⚠️ Slight lean (${Math.round(torsoAngle)}°)`;
           line(shoulder, hip, "orange");
@@ -167,12 +194,18 @@ const SquatDetector = () => {
       if (angle < 65) {
         setMsg("⚠️ Too deep — raise a bit!");
         line(A, C, "red");
+
+        // speak("Raise up");
       } else if (angle >= 65 && angle <= 100) {
         setMsg("✅ Good squat posture!");
         line(A, C, "green");
+
+        speak("Good"); // Throttled positive reinforcement
       } else {
         setMsg("⬇️ Go lower for better squat!");
         line(A, C, "orange");
+
+        speak("Go lower");
       }
     };
 
@@ -206,6 +239,7 @@ const SquatDetector = () => {
       cancelAnimationFrame(rafId);
       if (videoRef.current?.srcObject)
         videoRef.current.srcObject.getTracks().forEach((t) => t.stop());
+      window.speechSynthesis.cancel();
     };
   }, []);
 
