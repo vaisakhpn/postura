@@ -10,6 +10,8 @@ const PlankDetector = () => {
   const [feedback, setFeedback] = useState("Initializing camera...");
   const debug = false;
 
+  const lastSpokenTime = useRef(0);
+
   useEffect(() => {
     let detector = null;
     let rafId = null;
@@ -18,6 +20,16 @@ const PlankDetector = () => {
     const setMsg = (msg) => {
       if (debug) console.log("[PlankDetector]", msg);
       setFeedback(msg);
+    };
+
+    const speak = (text) => {
+      const now = Date.now();
+      if (now - lastSpokenTime.current > 3000) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        window.speechSynthesis.speak(utterance);
+        lastSpokenTime.current = now;
+      }
     };
 
     const setupVideo = async () => {
@@ -95,11 +107,26 @@ const PlankDetector = () => {
         ctx.stroke();
       };
 
+      const relevantKeypoints = [
+        "left_shoulder",
+        "right_shoulder",
+        "left_elbow",
+        "right_elbow",
+        "left_hip",
+        "right_hip",
+        "left_knee",
+        "right_knee",
+        "left_ankle",
+        "right_ankle",
+      ];
+
       ctx.fillStyle = "lime";
-      Object.values(points).forEach((p) => {
-        ctx.beginPath();
-        ctx.arc(w - p.x, p.y, 4, 0, Math.PI * 2);
-        ctx.fill();
+      Object.entries(points).forEach(([name, p]) => {
+        if (relevantKeypoints.includes(name)) {
+          ctx.beginPath();
+          ctx.arc(w - p.x, p.y, 4, 0, Math.PI * 2);
+          ctx.fill();
+        }
       });
 
       const leftSide = ["left_shoulder", "left_hip", "left_ankle"];
@@ -135,17 +162,21 @@ const PlankDetector = () => {
       if (hipAngle > 165) {
         spineColor = "green";
         statusMsg = "✅ Perfect Plank!";
+        speak("Perfect");
       } else if (hipAngle < 140) {
         if (hip.y < shoulder.y && hip.y < ankle.y) {
           spineColor = "red";
           statusMsg = "⚠️ Hips too high!";
+          speak("Hips too high");
         } else {
           spineColor = "orange";
           statusMsg = "⚠️ Hips sagging / straighten up!";
+          speak("Hips sagging");
         }
       } else {
         spineColor = "yellow";
         statusMsg = "⏸ Align your body straight";
+        // speak("Straighten up"); // maybe too chatty
       }
 
       setMsg(statusMsg);
@@ -189,6 +220,7 @@ const PlankDetector = () => {
       cancelAnimationFrame(rafId);
       if (videoRef.current?.srcObject)
         videoRef.current.srcObject.getTracks().forEach((t) => t.stop());
+      window.speechSynthesis.cancel();
     };
   }, []);
 
