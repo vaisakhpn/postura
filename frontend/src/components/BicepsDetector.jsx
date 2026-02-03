@@ -13,6 +13,7 @@ const BicepsDetector = () => {
 
   const countRef = useRef(0);
   const stageRef = useRef(null);
+  const lastSpokenTime = useRef(0);
 
   useEffect(() => {
     let detector = null;
@@ -22,6 +23,19 @@ const BicepsDetector = () => {
     const setMsg = (msg) => {
       if (debug) console.log("[BicepsDetector]", msg);
       setFeedback(msg);
+    };
+
+    const speak = (text) => {
+      const now = Date.now();
+
+      if (now - lastSpokenTime.current > 3000) {
+        window.speechSynthesis.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 1.0;
+        window.speechSynthesis.speak(utterance);
+        lastSpokenTime.current = now;
+      }
     };
 
     const setupVideo = async () => {
@@ -99,11 +113,26 @@ const BicepsDetector = () => {
         ctx.stroke();
       };
 
+      const relevantKeypoints = [
+        "left_shoulder",
+        "right_shoulder",
+        "left_elbow",
+        "right_elbow",
+        "left_wrist",
+        "right_wrist",
+        "left_hip",
+        "right_hip",
+        "left_knee",
+        "right_knee",
+      ];
+
       ctx.fillStyle = "lime";
-      Object.values(points).forEach((p) => {
-        ctx.beginPath();
-        ctx.arc(w - p.x, p.y, 4, 0, Math.PI * 2);
-        ctx.fill();
+      Object.entries(points).forEach(([name, p]) => {
+        if (relevantKeypoints.includes(name)) {
+          ctx.beginPath();
+          ctx.arc(w - p.x, p.y, 4, 0, Math.PI * 2);
+          ctx.fill();
+        }
       });
 
       const getSideScore = (prefix) => {
@@ -122,6 +151,7 @@ const BicepsDetector = () => {
 
       if (!side) {
         setMsg("⚠️ Please stand in side view");
+
         return;
       }
 
@@ -146,12 +176,13 @@ const BicepsDetector = () => {
       if (!isElbowPinned) {
         status = "⚠️ Pin elbow to side!";
         color = "red";
-
         line(elbow, hip, "red");
+        speak("Keep elbow pinned");
       } else if (!isBodyStable) {
         status = "⚠️ Don't swing hips!";
         color = "orange";
         line(hip, knee, "orange");
+        speak("Don't swing hips");
       } else {
         if (armAngle > 160) {
           stageRef.current = "DOWN";
@@ -163,6 +194,7 @@ const BicepsDetector = () => {
           setCount(countRef.current);
           status = "⬇️ Lower Down";
           color = "green";
+          speak("Good");
         } else {
           status = stageRef.current === "UP" ? "⬇️ Lower Down" : "💪 Curl Up";
           color = "yellow";
@@ -178,9 +210,9 @@ const BicepsDetector = () => {
 
       ctx.fillStyle = "white";
       ctx.font = "18px Arial";
-      ctx.fillText(`Angle: ${Math.round(armAngle)}°`, 10, 24);
-      ctx.fillText(`Reps: ${countRef.current}`, 10, 50);
-      ctx.fillText(`Side: ${side.toUpperCase()}`, 10, 76);
+
+      ctx.fillText(`Reps: ${countRef.current}`, 10, 48);
+      ctx.fillText(`Side: ${side.toUpperCase()}`, 10, 72);
     };
 
     const frameLoop = async () => {
@@ -212,6 +244,8 @@ const BicepsDetector = () => {
       cancelAnimationFrame(rafId);
       if (videoRef.current?.srcObject)
         videoRef.current.srcObject.getTracks().forEach((t) => t.stop());
+
+      window.speechSynthesis.cancel();
     };
   }, []);
 
@@ -237,6 +271,7 @@ const BicepsDetector = () => {
                 playsInline
                 controls
               />
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none"></div>
             </div>
             <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
               <h4 className="font-medium text-blue-800 dark:text-blue-300 mb-1">
@@ -258,9 +293,14 @@ const BicepsDetector = () => {
                 <span>👁️</span> AI Analysis
               </span>
               <div className="flex gap-3">
-                <span
+                {/* <span className="text-sm px-3 py-1 rounded-full font-medium bg-blue-100 text-blue-700">
+                  Reps: {count}
+                </span> */}
+                {/* <span
                   className={`text-sm px-3 py-1 rounded-full font-medium ${
-                    feedback.includes("Curl") || feedback.includes("Lower")
+                    feedback.includes("Curl") ||
+                    feedback.includes("Lower") ||
+                    feedback.includes("Good")
                       ? "bg-green-100 text-green-700"
                       : feedback.includes("⚠️")
                         ? "bg-red-100 text-red-700"
@@ -268,7 +308,7 @@ const BicepsDetector = () => {
                   }`}
                 >
                   {feedback}
-                </span>
+                </span> */}
               </div>
             </h3>
 
