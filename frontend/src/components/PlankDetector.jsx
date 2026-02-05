@@ -176,16 +176,14 @@ const PlankDetector = () => {
       } else {
         spineColor = "yellow";
         statusMsg = "⏸ Align your body straight";
-        // speak("Straighten up"); // maybe too chatty
+        
       }
 
       setMsg(statusMsg);
 
-      // Draw lines
       line(shoulder, hip, spineColor);
       line(hip, ankle, spineColor);
 
-      // Display Angle
       ctx.fillStyle = "white";
       ctx.font = "18px Arial";
       ctx.fillText(`Hip Angle: ${Math.round(hipAngle)}°`, 10, 24);

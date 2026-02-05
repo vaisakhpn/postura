@@ -293,9 +293,9 @@ const BicepsDetector = () => {
                 <span>👁️</span> AI Analysis
               </span>
               <div className="flex gap-3">
-                {/* <span className="text-sm px-3 py-1 rounded-full font-medium bg-blue-100 text-blue-700">
+                <span className="text-sm hidden px-3 py-1 rounded-full font-medium bg-blue-100 text-blue-700">
                   Reps: {count}
-                </span> */}
+                </span>
                 {/* <span
                   className={`text-sm px-3 py-1 rounded-full font-medium ${
                     feedback.includes("Curl") ||
