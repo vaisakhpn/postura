@@ -55,7 +55,7 @@ const Dashboard = () => {
   if (!ownerData) return <div className="p-8">Loading...</div>;
 
   return (
-    <div className="pt-36 px-8 min-h-screen bg-gray-50">
+    <div className="bg-gray-50">
       <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-6">
         <h1 className="text-3xl font-bold text-green-900 mb-6">
           Owner Dashboard

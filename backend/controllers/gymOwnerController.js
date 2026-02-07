@@ -1,7 +1,8 @@
 import validator from "validator";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import gymOwnerModel from "../models/gymOwnerModel.js"; // your new model
+import gymOwnerModel from "../models/gymOwnerModel.js";
+import userModel from "../models/userModel.js";
 
 // Register Gym Owner
 
@@ -106,4 +107,18 @@ const getGymOwnerProfile = async (req, res) => {
   }
 };
 
-export { registerGymOwner, loginGymOwner, getGymOwnerProfile };
+// Get Gym Members
+const getGymMembers = async (req, res) => {
+  try {
+    const ownerId = req.user.id;
+    const members = await userModel
+      .find({ selectedGym: ownerId })
+      .select("-password");
+    res.json({ success: true, members });
+  } catch (error) {
+    console.error(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+export { registerGymOwner, loginGymOwner, getGymOwnerProfile, getGymMembers };
