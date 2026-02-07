@@ -48,7 +48,7 @@ const Dashboard = () => {
   const handleLogout = () => {
     localStorage.removeItem("ownerToken");
     setOwnerToken(null);
-    navigate("/owner-login");
+    navigate("/");
     toast.success("Logged out successfully");
   };
 

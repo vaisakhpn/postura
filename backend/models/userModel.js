@@ -15,8 +15,16 @@ const userSchema = new mongoose.Schema(
       ref: "GymOwner",
       required: true,
     },
+    paymentStatus: {
+      type: String,
+      default: "Unpaid",
+    },
+    paymentDate: {
+      type: Date,
+      default: null,
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const userModel = mongoose.models.user || mongoose.model("user", userSchema);

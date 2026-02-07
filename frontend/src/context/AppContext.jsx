@@ -81,6 +81,7 @@ const AppContextProvider = (props) => {
     userData,
     setUserData,
     loadUserProfileData,
+    getProfileData: loadUserProfileData,
     loadingGyms,
     loadingProfile,
     logout,
