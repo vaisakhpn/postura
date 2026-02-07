@@ -1,12 +1,37 @@
-import React from "react";
-import { workouts } from "../assets/assets";
+
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { AppContext } from "../context/AppContext";
+import { toast } from "react-toastify";
+import { workouts } from "../assets/assets";
 
 const Workout = () => {
+  const { userData } = useContext(AppContext);
   const navigate = useNavigate();
-  const handleCheckPosture = (exerciseName) => {
-    navigate(`/posture/${exerciseName.toLowerCase()}`);
+
+  const handleCheckPosture = (workout) => {
+    if (userData.paymentStatus === "Unpaid") {
+      toast.error("Please pay your membership fee to access this feature.");
+      return;
+    }
+    navigate(`/posture/${workout.name.toLowerCase()}`, {
+      state: { workoutType: workout.name },
+    });
   };
+
+  const handleTutorial = (workout) => {
+    if (userData.paymentStatus === "Unpaid") {
+      toast.error("Please pay your membership fee to access this feature.");
+      return;
+    }
+    // Assuming workout object has a tutorialLink property
+    if (workout.tutorialLink) {
+      window.open(workout.tutorialLink, "_blank");
+    } else {
+      toast.info("Tutorial coming soon!");
+    }
+  };
+
   return (
     <div className="pt-44 px-8 text-black min-h-screen">
       <div className="flex flex-col justify-center items-center">
@@ -33,12 +58,15 @@ const Workout = () => {
 
             <div className="flex justify-center gap-4">
               <button
-                onClick={() => handleCheckPosture(workout.name)}
+                onClick={() => handleCheckPosture(workout)}
                 className="bg-white text-sm border text-green-800 p-2 rounded-xl font-semibold hover:bg-green-800 hover:text-white transition transition"
               >
                 Check Posture
               </button>
-              <button className="bg-white text-sm border p-2  text-green-800 rounded-xl font-semibold hover:bg-green-800 hover:text-white transition">
+              <button
+                onClick={() => handleTutorial(workout)}
+                className="bg-white text-sm border p-2  text-green-800 rounded-xl font-semibold hover:bg-green-800 hover:text-white transition"
+              >
                 Watch Tutorial
               </button>
             </div>
