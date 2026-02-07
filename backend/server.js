@@ -5,6 +5,7 @@ import connectDB from "./config/mongodb.js";
 import connectColudinary from "./config/cloudinary.js";
 import gymOwnerRouter from "./routes/gymOwnerRoutes.js";
 import userRouter from "./routes/userRoutes.js";
+import paymentRouter from "./routes/paymentRoutes.js";
 
 // app config
 
@@ -20,6 +21,7 @@ app.use(cors());
 // api endpoints
 app.use("/api/owner", gymOwnerRouter);
 app.use("/api/users", userRouter);
+app.use("/api/payment", paymentRouter);
 
 app.get("/", (req, res) => {
   res.send("API WORKING");

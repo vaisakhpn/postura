@@ -99,12 +99,31 @@ const loginUser = async (req, res) => {
 const getProfile = async (req, res) => {
   try {
     const userId = req.user.id;
-    const userData = await userModel
+    const user = await userModel
       .findById(userId)
       .populate("selectedGym", "gymName ownerName email phone")
       .select("-password");
 
-    res.json({ success: true, userData });
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
+    }
+
+
+    if (user.paymentStatus === "Paid" && user.paymentDate) {
+      const today = new Date();
+      const lastPaymentDate = new Date(user.paymentDate);
+      const nextDueDate = new Date(lastPaymentDate);
+      nextDueDate.setMonth(nextDueDate.getMonth() + 1);
+
+   
+      if (today >= nextDueDate) {
+        user.paymentStatus = "Unpaid";
+        
+        await user.save();
+      }
+    }
+
+    res.json({ success: true, userData: user });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
