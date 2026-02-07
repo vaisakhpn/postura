@@ -14,6 +14,11 @@ const AppContextProvider = (props) => {
     return stored && stored !== "false" ? stored : null;
   });
 
+  const [ownerToken, setOwnerToken] = useState(() => {
+    const stored = localStorage.getItem("ownerToken");
+    return stored && stored !== "false" ? stored : null;
+  });
+
   const [gyms, setGyms] = useState([]);
   const [userData, setUserData] = useState(null);
   const [loadingGyms, setLoadingGyms] = useState(true);
@@ -69,6 +74,8 @@ const AppContextProvider = (props) => {
     backendUrl,
     token,
     setToken,
+    ownerToken,
+    setOwnerToken,
     gyms,
     getGymData,
     userData,
