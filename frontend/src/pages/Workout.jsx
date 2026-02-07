@@ -1,4 +1,3 @@
-
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
@@ -24,12 +23,7 @@ const Workout = () => {
       toast.error("Please pay your membership fee to access this feature.");
       return;
     }
-    // Assuming workout object has a tutorialLink property
-    if (workout.tutorialLink) {
-      window.open(workout.tutorialLink, "_blank");
-    } else {
-      toast.info("Tutorial coming soon!");
-    }
+    navigate(`/tutorial/${workout.name.toLowerCase()}`);
   };
 
   return (
