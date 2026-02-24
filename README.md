@@ -145,8 +145,7 @@ Performance tracking & progress reports
 
 Vaisakh P N
 Full-Stack Developer
-GitHub: https://github.com/vaisakhpn
-LinkedIn: https://www.linkedin.com/in/vaisakhpn/
-GitHub: https://github.com/Vaisakh-pn
 
-LinkedIn: (your link)
+GitHub: https://github.com/vaisakhpn
+
+LinkedIn: https://www.linkedin.com/in/vaisakhpn/
