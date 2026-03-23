@@ -34,11 +34,11 @@ const Navbar = () => {
           />
         </NavLink>
 
-        <ul className="hidden md:flex items-start gap-6 font-medium">
+        <ul className="hidden cursor-pointer md:flex items-start gap-6 font-medium">
           <NavLink
             to="/"
             className={({ isActive }) =>
-              `hover:text-black ${isActive ? "text-green-800" : ""}`
+              `hover:text-black cursor-pointer ${isActive ? "text-green-800" : ""}`
             }
           >
             Home
@@ -46,7 +46,7 @@ const Navbar = () => {
           <NavLink
             to="/workout"
             className={({ isActive }) =>
-              `hover:text-black ${isActive ? "text-green-800" : ""}`
+              `hover:text-black cursor-pointer ${isActive ? "text-green-800" : ""}`
             }
           >
             Workout

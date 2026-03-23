@@ -10,10 +10,10 @@ const Header = () => {
       <img
         src={assets.p4}
         alt="AI Gym"
-        className="absolute inset-0 w-full h-full object-cover opacity-40"
+        className="absolute inset-0 w-full h-full object-cover opacity-40 pointer-events-none"
       />
 
-      <div className="relative text-center px-6">
+      <div className="relative text-center px-6 z-10">
         <h1 className="text-5xl md:text-6xl font-bold mb-4">
           Welcome to the Future of Fitness
         </h1>
@@ -24,13 +24,13 @@ const Header = () => {
         <div className="flex justify-center gap-4">
           <button
             onClick={() => navigate("/login")}
-            className="bg-green-800 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition"
+            className="bg-green-800 cursor-pointer hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition"
           >
             Start Your Journey
           </button>
           <button
             onClick={() => navigate("/workout")}
-            className="bg-white border border-green-700 text-green-800 px-6 py-3 rounded-lg font-semibold hover:bg-green-800 hover:text-white transition"
+            className="bg-white border cursor-pointer border-green-700 text-green-800 px-6 py-3 rounded-lg font-semibold hover:bg-green-800 hover:text-white transition"
           >
             Watch Tutorials
           </button>

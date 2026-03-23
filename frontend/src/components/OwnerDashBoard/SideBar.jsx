@@ -21,13 +21,13 @@ const Sidebar = ({ setView }) => {
             <FaUsers className="text-lg" />
             <span className="font-medium">Memberships</span>
           </li>
-          <li
+          {/* <li
             onClick={() => setView("edit-gym")}
             className="flex items-center gap-3 p-3 rounded-lg hover:bg-green-50 text-gray-700 hover:text-green-900 cursor-pointer transition-colors"
           >
             <FaEdit className="text-lg" />
             <span className="font-medium">Edit Gym</span>
-          </li>
+          </li> */}
         </ul>
       </div>
     </div>
