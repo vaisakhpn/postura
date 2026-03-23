@@ -9,6 +9,10 @@ const Workout = () => {
   const navigate = useNavigate();
 
   const handleCheckPosture = (workout) => {
+    if (!userData) {
+      toast.error("Please Login to use this feature");
+      return;
+    }
     if (userData.paymentStatus === "Unpaid") {
       toast.error("Please pay your membership fee to access this feature.");
       return;
@@ -19,6 +23,10 @@ const Workout = () => {
   };
 
   const handleTutorial = (workout) => {
+    if (!userData) {
+      toast.error("Please Login to use this feature");
+      return;
+    }
     if (userData.paymentStatus === "Unpaid") {
       toast.error("Please pay your membership fee to access this feature.");
       return;
