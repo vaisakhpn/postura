@@ -52,10 +52,10 @@ const Payments = () => {
 
   const handlePayment = async () => {
     try {
-      // Create Order
+      
       const { data } = await axios.post(
         `${backendUrl}/api/payment/create-order`,
-        { amount: 500 }, // Example Amount
+        { amount: 500 }, 
         { headers: { Authorization: `Bearer ${token}` } },
       );
 
