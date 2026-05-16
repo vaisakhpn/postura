@@ -103,7 +103,7 @@ const BicepsDetector = () => {
         if (p && p.score > 0.35) points[kp.name] = p;
       });
 
-      const line = (p1, p2, color = "yellow") => {
+      const line = (p1, p2, color = "green") => {
         if (!p1 || !p2) return;
         ctx.beginPath();
         ctx.moveTo(w - p1.x, p1.y);
@@ -184,11 +184,11 @@ const BicepsDetector = () => {
         line(hip, knee, "orange");
         speak("Don't swing hips");
       } else {
-        if (armAngle > 160) {
+        if (armAngle > 140) {
           stageRef.current = "DOWN";
           color = "white";
           status = "💪 Curl Up!";
-        } else if (armAngle < 40 && stageRef.current === "DOWN") {
+        } else if (armAngle < 90 && stageRef.current === "DOWN") {
           stageRef.current = "UP";
           countRef.current += 1;
           setCount(countRef.current);
@@ -197,7 +197,7 @@ const BicepsDetector = () => {
           speak("Good");
         } else {
           status = stageRef.current === "UP" ? "⬇️ Lower Down" : "💪 Curl Up";
-          color = "yellow";
+          color = "green";
         }
       }
 

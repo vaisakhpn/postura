@@ -11,7 +11,7 @@ import userRouter from "./routes/userRoutes.js";
 import paymentRouter from "./routes/paymentRoutes.js";
 
 const app = express();
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 5000;
 
 connectDB();
 connectColudinary();
