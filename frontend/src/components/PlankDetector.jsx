@@ -7,7 +7,7 @@ import "@mediapipe/pose";
 const PlankDetector = () => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
-  const [feedback, setFeedback] = useState("Initializing camera...");
+  const feedbackRef = useRef(null);
   const debug = false;
 
   const lastSpokenTime = useRef(0);
@@ -19,7 +19,9 @@ const PlankDetector = () => {
 
     const setMsg = (msg) => {
       if (debug) console.log("[PlankDetector]", msg);
-      setFeedback(msg);
+      if (feedbackRef.current) {
+        feedbackRef.current.innerText = msg;
+      }
     };
 
     const speak = (text) => {
@@ -266,7 +268,7 @@ const PlankDetector = () => {
               <span className="flex items-center gap-2">
                 <span>👁️</span> AI Analysis
               </span>
-              <span
+              {/* <span
                 className={`text-sm px-3 py-1 rounded-full font-medium ${
                   feedback.includes("✅")
                     ? "bg-green-100 text-green-700"
@@ -280,7 +282,7 @@ const PlankDetector = () => {
                   : feedback.includes("⚠️")
                     ? "Correction Needed"
                     : "Active"}
-              </span>
+              </span> */}
             </h3>
 
             <div className="relative w-full bg-black rounded-xl overflow-hidden shadow-lg aspect-[4/3] flex items-center justify-center">
@@ -298,8 +300,11 @@ const PlankDetector = () => {
 
               {/* Overlay Feedback Toast */}
               <div className="absolute bottom-4 left-0 right-0 flex justify-center pointer-events-none">
-                <div className="bg-black/70 backdrop-blur-md text-white px-6 py-2 rounded-full font-medium text-lg shadow-lg border border-white/10 transition-all duration-300">
-                  {feedback}
+                <div 
+                  ref={feedbackRef}
+                  className="bg-black/70 backdrop-blur-md text-white px-6 py-2 rounded-full font-medium text-lg shadow-lg border border-white/10 transition-all duration-300"
+                >
+                  Initializing camera...
                 </div>
               </div>
             </div>

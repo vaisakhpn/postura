@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
+import compression from "compression";
 import "dotenv/config";
 
 import connectDB from "./config/mongodb.js";
@@ -27,12 +28,13 @@ app.use(
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 1000,
   message: "Too many requests, please try again later",
 });
 
 app.use(limiter);
 
+app.use(compression());
 app.use(express.json());
 
 app.use("/api/owner", gymOwnerRouter);

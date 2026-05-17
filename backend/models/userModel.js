@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "GymOwner",
       required: true,
+      index: true,
     },
     paymentStatus: {
       type: String,

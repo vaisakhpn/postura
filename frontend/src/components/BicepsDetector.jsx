@@ -7,7 +7,7 @@ import "@mediapipe/pose";
 const BicepsDetector = () => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
-  const [feedback, setFeedback] = useState("Initializing camera...");
+  const feedbackRef = useRef(null);
   const [count, setCount] = useState(0);
   const debug = false;
 
@@ -22,7 +22,9 @@ const BicepsDetector = () => {
 
     const setMsg = (msg) => {
       if (debug) console.log("[BicepsDetector]", msg);
-      setFeedback(msg);
+      if (feedbackRef.current) {
+        feedbackRef.current.innerText = msg;
+      }
     };
 
     const speak = (text) => {
@@ -326,8 +328,11 @@ const BicepsDetector = () => {
               />
 
               <div className="absolute bottom-4 left-0 right-0 flex justify-center pointer-events-none">
-                <div className="bg-black/70 backdrop-blur-md text-white px-6 py-2 rounded-full font-medium text-lg shadow-lg border border-white/10 transition-all duration-300">
-                  {feedback}
+                <div 
+                  ref={feedbackRef}
+                  className="bg-black/70 backdrop-blur-md text-white px-6 py-2 rounded-full font-medium text-lg shadow-lg border border-white/10 transition-all duration-300"
+                >
+                  Initializing camera...
                 </div>
               </div>
             </div>
