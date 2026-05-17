@@ -25,7 +25,7 @@ app.use(
       const allowedOrigins = [
         "http://localhost:5173",
         "http://localhost:3000",
-        "https://postura-gym.vercel.app/",
+        "https://postura-gym.vercel.app",
       ].filter(Boolean);
 
       if (
