@@ -22,7 +22,13 @@ app.use(helmet());
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (!origin || origin.startsWith("http://localhost") || origin.startsWith("http://10.") || origin.startsWith("http://192.168.")) {
+      const allowedOrigins = [
+        "http://localhost:5173",
+        "http://localhost:3000",
+        process.env.FRONTEND_URL, // e.g., https://your-frontend.onrender.com
+      ].filter(Boolean);
+
+      if (!origin || allowedOrigins.includes(origin) || origin.startsWith("http://192.168.") || origin.startsWith("http://10.")) {
         callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"));

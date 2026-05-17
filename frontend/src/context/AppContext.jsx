@@ -6,10 +6,7 @@ import { useNavigate } from "react-router-dom";
 export const AppContext = createContext();
 
 const AppContextProvider = (props) => {
-  let backendUrl = import.meta.env.VITE_BACKEND_URL;
-  if (backendUrl.includes("localhost") && window.location.hostname !== "localhost") {
-    backendUrl = backendUrl.replace("localhost", window.location.hostname);
-  }
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const navigate = useNavigate();
 
   const [token, setToken] = useState(() => {
