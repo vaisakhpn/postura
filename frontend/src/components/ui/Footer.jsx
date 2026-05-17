@@ -6,11 +6,16 @@ const Footer = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="bg-slate-50 absolute">
-      <div className="md:mx-10  ">
-        <div className="flex flex-col border-t-2 pt-2 border-b-2 pb-2   sm:grid sm:grid-cols-[3fr_1fr_1fr] gap-14 my-10  text-sm">
-          <div>
-            <img className=" w-32" src={assets.logo} alt="LOGO" />
+    <div className="w-full bg-slate-50 mt-10">
+      <div className="px-6 md:px-10 max-w-7xl mx-auto">
+        <div className="flex flex-col sm:grid sm:grid-cols-[3fr_1fr_1fr] gap-10 sm:gap-14 py-10 border-t-2 border-b-2 border-gray-200 text-sm">
+          <div className="flex flex-col gap-4">
+            <img
+              className="w-24 md:w-32 cursor-pointer"
+              src={assets.logo}
+              alt="LOGO"
+              onClick={() => navigate("/")}
+            />
             <p className="w-full md:w-2/3 text-gray-600 leading-6">
               Postura helps you track your workouts and improve your posture.
               Fast, easy, and hassle-free gym sessions—anytime, anywhere.
@@ -41,8 +46,9 @@ const Footer = () => {
             </ul>
           </div>
         </div>
-        <div>
-          <p>Copyright 2025.All Rights Reserved</p>
+        {/* Copyright */}
+        <div className="text-center py-6 text-gray-500 text-sm">
+          <p>Copyright 2025. All Rights Reserved</p>
         </div>
       </div>
     </div>
