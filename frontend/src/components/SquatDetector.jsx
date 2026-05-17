@@ -9,7 +9,38 @@ const SquatDetector = () => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const feedbackRef = useRef(null);
+  const [facingMode, setFacingMode] = useState("user");
+  const isSwitchingRef = useRef(false);
   const debug = true;
+
+  const toggleCamera = async () => {
+    isSwitchingRef.current = true;
+    const newMode = facingMode === "user" ? "environment" : "user";
+    setFacingMode(newMode);
+    if (videoRef.current && videoRef.current.srcObject) {
+      videoRef.current.srcObject.getTracks().forEach((t) => t.stop());
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: newMode },
+        audio: false,
+      });
+      videoRef.current.srcObject = stream;
+      await new Promise((resolve) => {
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current.play().then(resolve).catch(resolve);
+        };
+      });
+      if (canvasRef.current) {
+        canvasRef.current.width = videoRef.current.videoWidth || 640;
+        canvasRef.current.height = videoRef.current.videoHeight || 480;
+      }
+      setTimeout(() => { isSwitchingRef.current = false; }, 500);
+    } catch (err) {
+      console.error("Error switching camera:", err);
+      isSwitchingRef.current = false;
+    }
+  };
 
   const lastSpokenTime = useRef(0); // For voice throttling
 
@@ -39,7 +70,7 @@ const SquatDetector = () => {
     const setupVideo = async () => {
       setMsg("Requesting camera permission...");
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { width: 640, height: 480, facingMode: "user" },
+        video: { facingMode: "user" },
         audio: false,
       });
       videoRef.current.srcObject = stream;
@@ -213,12 +244,17 @@ const SquatDetector = () => {
 
     const frameLoop = async () => {
       if (!running) return;
+      if (isSwitchingRef.current) {
+        rafId = requestAnimationFrame(frameLoop);
+        return;
+      }
       try {
-        const poses = await detector.estimatePoses(videoRef.current);
-        draw(poses);
+        if (videoRef.current && videoRef.current.readyState >= 2) {
+          const poses = await detector.estimatePoses(videoRef.current);
+          draw(poses);
+        }
       } catch (err) {
         console.error("estimatePoses error:", err);
-        setMsg("Error: " + err.message);
       }
       rafId = requestAnimationFrame(frameLoop);
     };
@@ -251,9 +287,9 @@ const SquatDetector = () => {
         🏋️ AI Posture Correction - Squat
       </h2>
 
-      <div className="flex flex-col xl:flex-row gap-8 w-full max-w-7xl justify-center items-start">
+      <div className="flex flex-col-reverse xl:flex-row gap-4 md:gap-8 w-full max-w-7xl justify-center items-start">
         <div className="w-full xl:w-1/2 flex flex-col items-center">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl w-full border border-gray-100 dark:border-gray-700">
+          <div className="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-2xl shadow-xl w-full border border-gray-100 dark:border-gray-700">
             <h3 className="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-200 flex items-center gap-2">
               <span>📸</span> Reference Form
             </h3>
@@ -283,21 +319,12 @@ const SquatDetector = () => {
               <span className="flex items-center gap-2">
                 <span>👁️</span> AI Analysis
               </span>
-              {/* <span
-                className={`text-sm px-3 py-1 rounded-full font-medium ${
-                  feedback.includes("✅")
-                    ? "bg-green-100 text-green-700"
-                    : feedback.includes("⚠️") || feedback.includes("⬇️")
-                      ? "bg-red-100 text-red-700"
-                      : "bg-yellow-100 text-yellow-700"
-                }`}
+              <button
+                onClick={toggleCamera}
+                className="text-sm px-4 py-2 rounded-lg font-medium bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 transition flex items-center gap-2"
               >
-                {feedback.includes("✅")
-                  ? "Good Form"
-                  : feedback.includes("⚠️") || feedback.includes("⬇️")
-                    ? "Correction Needed"
-                    : "Active"}
-              </span> */}
+                🔄 Flip Camera
+              </button>
             </h3>
 
             <div className="relative w-full bg-black rounded-xl overflow-hidden shadow-lg aspect-[3/4] flex items-center justify-center">

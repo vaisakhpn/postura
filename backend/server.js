@@ -21,7 +21,13 @@ app.use(helmet());
 
 app.use(
   cors({
-    origin: ["http://localhost:3000"],
+    origin: function (origin, callback) {
+      if (!origin || origin.startsWith("http://localhost") || origin.startsWith("http://10.") || origin.startsWith("http://192.168.")) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   }),
 );
