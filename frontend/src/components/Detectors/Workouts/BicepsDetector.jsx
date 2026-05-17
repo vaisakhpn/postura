@@ -148,7 +148,7 @@ const BicepsDetector = () => {
   return (
     <DetectorLayout
       title="💪 AI Bicep Curls (Side View)"
-      referenceVideoSrc="/biceps_side.mp4"
+      referenceVideoSrc="https://res.cloudinary.com/dreocrqpa/video/upload/f_auto,q_auto/v1779028850/biceps_side_htwiat.mp4"
       proTips={[
         "Stand sideways to the camera.",
         "Keep elbow pinned to your hip.",

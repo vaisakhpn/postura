@@ -115,7 +115,7 @@ const SquatDetector = () => {
   return (
     <DetectorLayout
       title="🏋️ AI Posture Correction - Squat"
-      referenceVideoSrc="/squat_front.jpeg"
+      referenceVideoSrc="https://res.cloudinary.com/dreocrqpa/image/upload/f_auto,q_auto/v1779028848/squat_front_w8n9xs.jpg"
       proTips={[
         "Keep your back straight and chest up.",
         "Lower hips until thighs are parallel to the floor.",

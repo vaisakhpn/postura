@@ -106,7 +106,7 @@ const PushUpDetector = () => {
   return (
     <DetectorLayout
       title="🤸 AI Push-Up Detector"
-      referenceVideoSrc="/pushup_side.mp4"
+      referenceVideoSrc="https://res.cloudinary.com/dreocrqpa/video/upload/f_auto,q_auto/v1779028849/pushup_side_w8cbtm.mp4"
       proTips={[
         "Keep your body in a straight line (head to heels).",
         "Lower chest until elbows are at 90 degrees.",

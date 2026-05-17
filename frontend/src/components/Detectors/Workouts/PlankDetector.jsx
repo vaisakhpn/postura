@@ -107,7 +107,7 @@ const PlankDetector = () => {
   return (
     <DetectorLayout
       title="🧘 AI Plank Detector"
-      referenceVideoSrc="/plank_side.mp4"
+      referenceVideoSrc="https://res.cloudinary.com/dreocrqpa/video/upload/f_auto,q_auto/v1779028850/plank_side_x2oagu.mp4"
       proTips={[
         "Keep body in a straight line from head to heels.",
         "Engage your core and glutes.",

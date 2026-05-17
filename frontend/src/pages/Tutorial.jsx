@@ -7,10 +7,10 @@ const Tutorial = () => {
   const navigate = useNavigate();
 
   const videoMap = {
-    pushup: "/pushup_tuto.mp4",
-    squat: "/sqaut_tuto.mp4",
-    planks: "/plank_tuto.mp4",
-    biceps: "/biceps_tuto.mp4",
+    pushup: "https://res.cloudinary.com/dreocrqpa/video/upload/f_auto,q_auto/v1779028863/pushup_tuto_gjxj2a.mp4",
+    squat: "https://res.cloudinary.com/dreocrqpa/video/upload/f_auto,q_auto/v1779028866/sqaut_tuto_j7aihv.mp4",
+    planks: "https://res.cloudinary.com/dreocrqpa/video/upload/f_auto,q_auto/v1779028869/plank_tuto_vb5roj.mp4",
+    biceps: "https://res.cloudinary.com/dreocrqpa/video/upload/f_auto,q_auto/v1779028870/biceps_tuto_eqonst.mp4",
   };
 
   const videoSrc = videoMap[workoutName.toLowerCase()];
