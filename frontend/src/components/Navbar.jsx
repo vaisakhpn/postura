@@ -25,7 +25,7 @@ const Navbar = () => {
           : "text-black border-b-2"
       }`}
     >
-      <div className="flex items-center justify-between px-4 md:px-8 py-3 md:py-0">
+      <div className="flex items-center justify-between px-4 md:px-8 py-1 md:py-0">
         <NavLink to="/">
           <img
             className="w-24 md:w-32 cursor-pointer"
@@ -157,7 +157,7 @@ const Navbar = () => {
 
       {/* Mobile Menu Dropdown */}
       <div
-        className={`md:hidden ${showMenu ? "block" : "hidden"} bg-white border-b-2 border-gray-200 shadow-md absolute w-56 right-0`}
+        className={`md:hidden ${showMenu ? "block" : "hidden"} bg-white rounded-md border-b-2 border-gray-200 shadow-md absolute w-56 right-0`}
       >
         <ul className="flex flex-col items-center gap-4 py-6 text-black font-medium">
           <NavLink
