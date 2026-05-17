@@ -25,10 +25,15 @@ app.use(
       const allowedOrigins = [
         "http://localhost:5173",
         "http://localhost:3000",
-        process.env.FRONTEND_URL, // e.g., https://your-frontend.onrender.com
+        "https://postura-gym.vercel.app/",
       ].filter(Boolean);
 
-      if (!origin || allowedOrigins.includes(origin) || origin.startsWith("http://192.168.") || origin.startsWith("http://10.")) {
+      if (
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        origin.startsWith("http://192.168.") ||
+        origin.startsWith("http://10.")
+      ) {
         callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"));
