@@ -1,9 +1,9 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import SquatDetector from "../components/SquatDetector";
-import PushUpDetector from "../components/PushUpDetector";
-import PlankDetector from "../components/PlankDetector";
-import BicepsDetector from "../components/BicepsDetector";
+import SquatDetector from "../components/Detectors/Workouts/SquatDetector";
+import PushUpDetector from "../components/Detectors/Workouts/PushUpDetector";
+import PlankDetector from "../components/Detectors/Workouts/PlankDetector";
+import BicepsDetector from "../components/Detectors/Workouts/BicepsDetector";
 
 const PosturePage = () => {
   const { exerciseName } = useParams();
