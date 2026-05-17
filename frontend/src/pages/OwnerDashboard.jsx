@@ -8,9 +8,9 @@ const OwnerDashboard = () => {
   const [view, setView] = useState("dashboard");
 
   return (
-    <div className="flex pt-32 w-full min-h-screen bg-gray-50">
+    <div className="flex flex-col md:flex-row pt-24 md:pt-32 w-full min-h-screen bg-gray-50">
       <Sidebar setView={setView} />
-      <div className="flex-1 p-6">
+      <div className="flex-1 p-3 md:p-6 overflow-x-hidden">
         {view === "dashboard" && <Dashboard />}
         {view === "memberships" && <Memberships />}
         {view === "edit-gym" && <EditGym />}

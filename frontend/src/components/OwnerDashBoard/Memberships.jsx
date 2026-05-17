@@ -71,12 +71,12 @@ const Memberships = () => {
   if (loading) return <div className="p-8">Loading members...</div>;
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
-      <div className="flex flex-col md:flex-row justify-between items-center mb-6">
-        <h2 className="text-3xl font-bold text-green-900 mb-4 md:mb-0">
+    <div className="p-3 md:p-8 bg-gray-50 min-h-screen">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+        <h2 className="text-2xl md:text-3xl font-bold text-green-900 mb-4 md:mb-0">
           Memberships
         </h2>
-        <div className="relative w-full md:w-1/3">
+        <div className="relative w-full md:w-1/2 lg:w-1/3">
           <input
             type="text"
             placeholder="Search by name, email, or phone..."
