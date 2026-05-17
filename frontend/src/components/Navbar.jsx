@@ -7,7 +7,8 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isHome = location.pathname === "/";
-  const { token, setToken, userData, ownerToken } = useContext(AppContext);
+  const { token, setToken, userData, ownerToken, loadingProfile } =
+    useContext(AppContext);
   const [showMenu, setShowMenu] = useState(false);
 
   const logout = () => {
@@ -61,7 +62,11 @@ const Navbar = () => {
         </ul>
 
         <div className="flex items-center gap-2 md:gap-4">
-          {token && userData ? (
+          {token && loadingProfile ? (
+            <div className="hidden md:flex items-center justify-center">
+              <div className="w-8 h-8 md:w-10 md:h-10 border-4 border-gray-200 border-t-green-800 rounded-full animate-spin"></div>
+            </div>
+          ) : token && userData ? (
             <div className="hidden md:block">
               <div className="flex items-center gap-2 cursor-pointer group relative">
                 <img
@@ -183,7 +188,14 @@ const Navbar = () => {
             About
           </NavLink>
 
-          {token && userData ? (
+          {token && loadingProfile ? (
+            <>
+              <div className="w-full border-t border-gray-200 my-1"></div>
+              <div className="flex justify-center py-2">
+                <div className="w-8 h-8 border-4 border-gray-200 border-t-green-800 rounded-full animate-spin"></div>
+              </div>
+            </>
+          ) : token && userData ? (
             <>
               <div className="w-full border-t border-gray-200 my-1"></div>
               <p
