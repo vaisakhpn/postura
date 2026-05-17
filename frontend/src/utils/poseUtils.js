@@ -15,18 +15,36 @@ export const calcAngle = (A, B, C) => {
   return (Math.acos(cosTheta) * 180) / Math.PI;
 };
 
-export const drawLine = (ctx, p1, p2, w, color = "green", lineWidth = 3) => {
+export const drawLine = (ctx, p1, p2, w, color = "green", lineWidth = 3, glow = false) => {
   if (!p1 || !p2) return;
   ctx.beginPath();
   ctx.moveTo(w - p1.x, p1.y);
   ctx.lineTo(w - p2.x, p2.y);
   ctx.strokeStyle = color;
   ctx.lineWidth = lineWidth;
+  ctx.lineCap = "round";
+
+  if (glow) {
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = color;
+  } else {
+    ctx.shadowBlur = 0;
+  }
+
   ctx.stroke();
+  ctx.shadowBlur = 0; // reset
 };
 
-export const drawKeypoints = (ctx, points, relevantKeypoints, w, color = "lime", radius = 4) => {
+export const drawKeypoints = (ctx, points, relevantKeypoints, w, color = "lime", radius = 4, glow = false) => {
   ctx.fillStyle = color;
+  
+  if (glow) {
+    ctx.shadowBlur = 12;
+    ctx.shadowColor = color;
+  } else {
+    ctx.shadowBlur = 0;
+  }
+
   Object.entries(points).forEach(([name, p]) => {
     if (relevantKeypoints.includes(name)) {
       ctx.beginPath();
@@ -34,6 +52,8 @@ export const drawKeypoints = (ctx, points, relevantKeypoints, w, color = "lime",
       ctx.fill();
     }
   });
+
+  ctx.shadowBlur = 0; // reset
 };
 
 export const speak = (text, lastSpokenTimeRef) => {

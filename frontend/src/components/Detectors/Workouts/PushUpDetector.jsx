@@ -47,7 +47,7 @@ const PushUpDetector = () => {
       "right_ankle",
     ];
 
-    drawKeypoints(ctx, points, relevantKeypoints, w, "lime", 4);
+    drawKeypoints(ctx, points, relevantKeypoints, w, "#00ffff", 5, true);
 
     const shoulder = points["left_shoulder"] || points["right_shoulder"];
     const elbow = points["left_elbow"] || points["right_elbow"];
@@ -72,26 +72,26 @@ const PushUpDetector = () => {
     }
 
     let statusMsg = "Active";
-    let spineColor = "cyan";
+    let spineColor = "#00ffff"; // cyan
 
     if (hipFeedback) {
-      spineColor = "red";
+      spineColor = "#ff003c"; // neon red
       statusMsg = hipFeedback;
     } else if (bodyAngle > 165) {
-      spineColor = "green";
+      spineColor = "#39ff14"; // neon green
       statusMsg = "✅ Good Form";
     } else {
-      spineColor = "yellow";
+      spineColor = "#ffea00"; // neon yellow
       statusMsg = "Active";
     }
 
     setMsg(statusMsg);
 
-    if (shoulder && elbow) drawLine(ctx, shoulder, elbow, w, "white");
-    if (elbow && wrist) drawLine(ctx, elbow, wrist, w, "white");
-    if (shoulder && hip) drawLine(ctx, shoulder, hip, w, spineColor);
-    if (hip && knee) drawLine(ctx, hip, knee, w, spineColor);
-    if (knee && ankle) drawLine(ctx, knee, ankle, w, spineColor);
+    if (shoulder && elbow) drawLine(ctx, shoulder, elbow, w, "#ffffff", 4, true);
+    if (elbow && wrist) drawLine(ctx, elbow, wrist, w, "#ffffff", 4, true);
+    if (shoulder && hip) drawLine(ctx, shoulder, hip, w, spineColor, 4, true);
+    if (hip && knee) drawLine(ctx, hip, knee, w, spineColor, 4, true);
+    if (knee && ankle) drawLine(ctx, knee, ankle, w, spineColor, 4, true);
 
     ctx.fillStyle = "white";
     ctx.font = "18px Arial";

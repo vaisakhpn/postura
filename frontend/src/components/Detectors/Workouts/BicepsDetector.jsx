@@ -48,7 +48,7 @@ const BicepsDetector = () => {
       "right_knee",
     ];
 
-    drawKeypoints(ctx, points, relevantKeypoints, w, "lime", 4);
+    drawKeypoints(ctx, points, relevantKeypoints, w, "#00ffff", 5, true);
 
     const getSideScore = (prefix) => {
       const needed = ["shoulder", "elbow", "wrist", "hip", "knee"];
@@ -87,48 +87,48 @@ const BicepsDetector = () => {
     const shoulderHipDistX = Math.abs(shoulder.x - hip.x);
     const isShoulderStable = shoulderHipDistX < torsoH * 0.15;
 
-    let color = "yellow";
+    let color = "#ffea00"; // neon yellow
     let status = "Active";
 
     if (!isElbowPinned) {
       status = "⚠️ Pin elbow to side!";
-      color = "red";
-      drawLine(ctx, elbow, hip, w, "red");
+      color = "#ff003c"; // neon red
+      drawLine(ctx, elbow, hip, w, "#ff003c", 4, true);
       speak("Keep elbow pinned", lastSpokenTime);
     } else if (!isBodyStable) {
       status = "⚠️ Don't swing hips!";
-      color = "orange";
-      drawLine(ctx, hip, knee, w, "orange");
+      color = "#ff9a00"; // neon orange
+      drawLine(ctx, hip, knee, w, "#ff9a00", 4, true);
       speak("Don't swing hips", lastSpokenTime);
     } else if (!isShoulderStable) {
       status = "⚠️ Keep shoulders steady!";
-      color = "red";
-      drawLine(ctx, shoulder, hip, w, "red");
+      color = "#ff003c"; // neon red
+      drawLine(ctx, shoulder, hip, w, "#ff003c", 4, true);
       speak("Keep shoulders steady", lastSpokenTime);
     } else {
       if (armAngle > 140) {
         stageRef.current = "DOWN";
-        color = "white";
+        color = "#ffffff"; // bright white
         status = "💪 Curl Up!";
       } else if (armAngle < 90 && stageRef.current === "DOWN") {
         stageRef.current = "UP";
         countRef.current += 1;
         setCount(countRef.current);
         status = "⬇️ Lower Down";
-        color = "green";
+        color = "#39ff14"; // neon green
         speak("Good", lastSpokenTime);
       } else {
         status = stageRef.current === "UP" ? "⬇️ Lower Down" : "💪 Curl Up";
-        color = "green";
+        color = "#39ff14"; // neon green
       }
     }
 
     setMsg(status);
 
-    drawLine(ctx, shoulder, elbow, w, color);
-    drawLine(ctx, elbow, wrist, w, color);
-    drawLine(ctx, shoulder, hip, w, "cyan");
-    drawLine(ctx, hip, knee, w, isBodyStable ? "cyan" : "orange");
+    drawLine(ctx, shoulder, elbow, w, color, 4, true);
+    drawLine(ctx, elbow, wrist, w, color, 4, true);
+    drawLine(ctx, shoulder, hip, w, "#00ffff", 4, true);
+    drawLine(ctx, hip, knee, w, isBodyStable ? "#00ffff" : "#ff9a00", 4, true);
 
     ctx.fillStyle = "white";
     ctx.font = "18px Arial";

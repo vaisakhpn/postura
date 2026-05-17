@@ -45,7 +45,7 @@ const PlankDetector = () => {
       "right_ankle",
     ];
 
-    drawKeypoints(ctx, points, relevantKeypoints, w, "lime", 4);
+    drawKeypoints(ctx, points, relevantKeypoints, w, "#00ffff", 5, true);
 
     const leftSide = ["left_shoulder", "left_hip", "left_ankle"];
     const rightSide = ["right_shoulder", "right_hip", "right_ankle"];
@@ -69,32 +69,32 @@ const PlankDetector = () => {
     const [shoulder, hip, ankle] = useSide.map((k) => points[k]);
     const hipAngle = calcAngle(shoulder, hip, ankle);
 
-    let spineColor = "yellow";
+    let spineColor = "#ffea00"; // neon yellow
     let statusMsg = "";
 
     if (hipAngle > 165) {
-      spineColor = "green";
+      spineColor = "#39ff14"; // neon green
       statusMsg = "✅ Perfect Plank!";
       speak("Perfect", lastSpokenTime);
     } else if (hipAngle < 140) {
       if (hip.y < shoulder.y && hip.y < ankle.y) {
-        spineColor = "red";
+        spineColor = "#ff003c"; // neon red
         statusMsg = "⚠️ Hips too high!";
         speak("Hips too high", lastSpokenTime);
       } else {
-        spineColor = "orange";
+        spineColor = "#ff9a00"; // neon orange
         statusMsg = "⚠️ Hips sagging / straighten up!";
         speak("Hips sagging", lastSpokenTime);
       }
     } else {
-      spineColor = "yellow";
+      spineColor = "#ffea00"; // neon yellow
       statusMsg = "⏸ Align your body straight";
     }
 
     setMsg(statusMsg);
 
-    drawLine(ctx, shoulder, hip, w, spineColor);
-    drawLine(ctx, hip, ankle, w, spineColor);
+    drawLine(ctx, shoulder, hip, w, spineColor, 4, true);
+    drawLine(ctx, hip, ankle, w, spineColor, 4, true);
 
     ctx.fillStyle = "white";
     ctx.font = "18px Arial";

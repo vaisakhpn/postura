@@ -50,7 +50,7 @@ const SquatDetector = () => {
       "right_ankle",
     ];
 
-    drawKeypoints(ctx, points, relevantKeypoints, w, "lime", 4);
+    drawKeypoints(ctx, points, relevantKeypoints, w, "#00ffff", 5, true);
 
     const shoulder = points["left_shoulder"] || points["right_shoulder"];
     const hip = points["left_hip"] || points["right_hip"];
@@ -60,14 +60,14 @@ const SquatDetector = () => {
 
       if (torsoAngle > 35) {
         torsoFeedback = `⚠️ Leaning too far (${Math.round(torsoAngle)}°)`;
-        drawLine(ctx, shoulder, hip, w, "red");
+        drawLine(ctx, shoulder, hip, w, "#ff003c", 4, true);
         speak("Lift your chest", lastSpokenTime);
       } else if (torsoAngle > 20) {
         torsoFeedback = `⚠️ Slight lean (${Math.round(torsoAngle)}°)`;
-        drawLine(ctx, shoulder, hip, w, "orange");
+        drawLine(ctx, shoulder, hip, w, "#ff9a00", 4, true);
       } else {
         torsoFeedback = `✅ Good posture (${Math.round(torsoAngle)}°)`;
-        drawLine(ctx, shoulder, hip, w, "blue");
+        drawLine(ctx, shoulder, hip, w, "#00ffff", 4, true);
       }
 
       ctx.fillStyle = "white";
@@ -97,14 +97,14 @@ const SquatDetector = () => {
 
     if (angle < 65) {
       setMsg("⚠️ Too deep — raise a bit!");
-      drawLine(ctx, A, C, w, "red");
+      drawLine(ctx, A, C, w, "#ff003c", 4, true);
     } else if (angle >= 65 && angle <= 100) {
       setMsg("✅ Good squat posture!");
-      drawLine(ctx, A, C, w, "green");
+      drawLine(ctx, A, C, w, "#39ff14", 4, true);
       speak("Good", lastSpokenTime);
     } else {
       setMsg("⬇️ Go lower for better squat!");
-      drawLine(ctx, A, C, w, "orange");
+      drawLine(ctx, A, C, w, "#ff9a00", 4, true);
       speak("Go lower", lastSpokenTime);
     }
   };
